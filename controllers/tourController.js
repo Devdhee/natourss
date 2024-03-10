@@ -1,14 +1,33 @@
 import fs from 'fs';
 import path from 'path';
-import express from 'express';
-
-const app = express();
 const __dirname = path.resolve();
-app.use(express.json());
 
 let tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
+
+const checkID = (req, res, next, val) => {
+  console.log(val);
+  if (Number(req.params.id) >= tours.length || Number(req.params.id) < 0) {
+    return res.status(404).json({
+      status: ' fail',
+      message: 'Invalid ID',
+    });
+  }
+  next();
+};
+
+const checkBody = (req, res, next) => {
+  if (!req.body.name || !req.body.price) {
+    console.log(req.body);
+    return res.status(400).json({
+      status: ' fail',
+      massage: 'Post request couls not be completed!',
+    });
+  }
+
+  next();
+};
 
 // ROUTE HANDLERS
 const getAllTours = (req, res) => {
@@ -24,14 +43,6 @@ const getAllTours = (req, res) => {
 const getTour = (req, res) => {
   const id = Number(req.params.id);
   const tour = tours.find((el) => el.id === id);
-
-  // if (id >= tours.length || id < 0)
-  if (!tour) {
-    return res.status(404).json({
-      status: ' fail',
-      message: 'Invalid ID',
-    });
-  }
 
   res.status(200).json({
     status: 'success',
@@ -65,13 +76,6 @@ const updateTour = (req, res) => {
   const id = Number(req.params.id);
   const tour = tours.find((el) => el.id === id);
 
-  if (!tour) {
-    return res.status(404).json({
-      status: ' fail',
-      message: 'Invalid ID',
-    });
-  }
-
   const updatedTour = { ...tour, ...req.body };
   const updatedTours = tours.map((tour) =>
     tour.id === updatedTour.id ? updatedTour : tour
@@ -95,13 +99,6 @@ const deleteTour = (req, res) => {
   const id = Number(req.params.id);
   const tour = tours.find((el) => el.id === id);
 
-  if (!tour) {
-    return res.status(404).json({
-      status: ' fail',
-      message: 'Invalid ID',
-    });
-  }
-
   const deletedTour = tours.filter((el) => el.id !== tour.id);
   fs.writeFile(
     `${__dirname}../dev-data/data/tours-simple.json`,
@@ -115,4 +112,12 @@ const deleteTour = (req, res) => {
   );
 };
 
-export { getAllTours, getTour, updateTour, createTour, deleteTour };
+export {
+  getAllTours,
+  getTour,
+  updateTour,
+  createTour,
+  deleteTour,
+  checkID,
+  checkBody,
+};

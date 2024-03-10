@@ -1,5 +1,3 @@
-import express from 'express';
-
 const getAllUsers = (req, res) => {
   res.status(500).json({
     status: 'error',
