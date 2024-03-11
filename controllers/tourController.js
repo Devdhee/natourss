@@ -1,11 +1,21 @@
 import path from 'path';
-import Tour from '../modules/tourModules.js';
+import Tour from '../models/tourModel.js';
 const __dirname = path.resolve();
 
 // ROUTE HANDLERS
 const getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    console.log(req.query);
+
+    // const tours = await Tour.find()
+    //   .where('duration')
+    //   .equals(5)
+    //   .where('difficulty')
+    //   .equals('easy');
+
+    const query = Tour.find(req.query);
+
+    const tours = await query;
     res.status(200).json({
       status: 'success',
       results: tours.length,
@@ -50,7 +60,7 @@ const createTour = async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: 'fail',
-      message: 'Invalid dataset',
+      message: err.message,
     });
   }
 };
