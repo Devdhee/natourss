@@ -1,21 +1,23 @@
-import path from 'path';
 import Tour from '../models/tourModel.js';
-const __dirname = path.resolve();
+import APIFeatures from '../utils/apiFeatures.js';
+
+const aliasTopTours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+
+  next();
+};
 
 // ROUTE HANDLERS
 const getAllTours = async (req, res) => {
   try {
-    console.log(req.query);
-
-    // const tours = await Tour.find()
-    //   .where('duration')
-    //   .equals(5)
-    //   .where('difficulty')
-    //   .equals('easy');
-
-    const query = Tour.find(req.query);
-
-    const tours = await query;
+    const features = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+    const tours = await features.query;
     res.status(200).json({
       status: 'success',
       results: tours.length,
@@ -24,6 +26,7 @@ const getAllTours = async (req, res) => {
       },
     });
   } catch (err) {
+    console.log(err);
     res.status(404).json({
       status: 'fail',
       message: err,
@@ -101,4 +104,23 @@ const deleteTour = async (req, res) => {
   }
 };
 
-export { getAllTours, getTour, updateTour, createTour, deleteTour };
+const getTourStats = async (req, res) => {
+  try {
+    const stats = Tour.aggregate([]);
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err,
+    });
+  }
+};
+
+export {
+  getAllTours,
+  getTour,
+  updateTour,
+  createTour,
+  deleteTour,
+  aliasTopTours,
+  getTourStats,
+};
