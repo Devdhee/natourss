@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import slugify from 'slugify';
 
 const tourSchema = new Schema(
   {
@@ -8,6 +9,7 @@ const tourSchema = new Schema(
       unique: true,
       trim: true,
     },
+    slug: String,
     duration: {
       type: Number,
       required: [true, 'A tour must have a duration'],
@@ -54,8 +56,26 @@ const tourSchema = new Schema(
     },
     startDates: [Date],
   },
-  { strictQuery: true }
+  {
+    strictQuery: true,
+    toJSON: {
+      virtuals: true,
+    },
+    toObject: {
+      virtuals: true,
+    },
+  }
 );
+
+tourSchema.virtual('durationWeeks').get(function () {
+  return this.duration / 7;
+});
+
+// document middleware, runs before the .save() and .create()
+tourSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
 
 const Tour = model('Tour', tourSchema);
 
