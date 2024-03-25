@@ -9,14 +9,14 @@ export default class APIFeatures {
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
     const queryObj = JSON.parse(queryStr);
 
-    this.query.find(queryObj);
+    this.query = this.query.find(queryObj);
 
     return this;
   }
 
   sort() {
     if (this.queryString.sort) {
-      const sortBy = this.queryString.sort.split(',').join(' ');
+      const sortBy = this.queryString.sort.split(',').join('');
       this.query = this.query.sort(sortBy);
     } else {
       this.query = this.query.sort('-createdAt');
