@@ -69,6 +69,6 @@ export const globalErrorHandler = (err, req, res, next) => {
       error = handleValidationErrorDB(error);
     if (error.name === 'JsonWebTokenError') error = handleJWTErrorDB();
     if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
-    // sendErrorProd(error, res);
+    sendErrorProd(error, res);
   }
 };

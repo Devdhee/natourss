@@ -17,6 +17,7 @@ const signUp = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     passwordChangedAt: req.body.passwordChangedAt,
+    role: req.body.role,
   });
 
   const token = signToken(newUser._id);
@@ -73,17 +74,49 @@ const protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(Jwt.verify)(token, process.env.JWT_SECRET);
 
   //   3. Check if user still exists
-  const freshUser = await User.findById(decoded.id);
-  if (!freshUser) {
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser) {
     return next(
       new AppError('The user belonging to the token no longer exist.', 401)
     );
   }
 
   //   4. Check if user changed password after the token was issued
-  freshUser.changedPasswordAfter(decoded.iat);
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
+    return next(
+      new AppError('User recently chnaged password! Please log in again.', 401)
+    );
+  }
 
+  //   Grant access to protected route
+  req.user = currentUser;
   next();
 });
 
-export { signUp, login, protect };
+const restrictTo = (...roles) => {
+  return (req, res, next) => {
+    //roles is an array. eg ['admin', 'user']
+
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError('You do not have permission to perform this action.', 403)
+      );
+    }
+
+    next();
+  };
+};
+
+const forgotPassword = catchAsync(async (req, res, next) => {
+  // 1. Get user based on posted email
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return new AppError('There is no user with that email address.', 404);
+  }
+
+  // 2. Generate random token
+  // 3. Send it to user's email
+});
+const resetPassword = (req, res, next) => {};
+
+export { signUp, login, protect, restrictTo, forgotPassword, resetPassword };

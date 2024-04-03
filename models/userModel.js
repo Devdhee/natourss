@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 import validator from 'validator';
 import bcryptjs from 'bcryptjs';
+import crypto from 'crypto';
 
 const userSchema = new Schema({
   name: {
@@ -15,6 +16,11 @@ const userSchema = new Schema({
     validate: [validator.isEmail, 'Please provide a valid email'],
   },
   photo: String,
+  role: {
+    type: String,
+    enum: ['user', 'guide', 'lead-guide', 'admin'],
+    default: 'user',
+  },
   password: {
     type: String,
     required: [true, 'Please provide a password!'],
@@ -53,10 +59,23 @@ userSchema.methods.correctPassword = async function (
 
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   if (this.passwordChangedAt) {
-    console.log(this.passwordChangedAt, JWTTimestamp);
+    const changedTimeStamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+
+    console.log(changedTimeStamp, JWTTimestamp);
+    return JWTTimestamp < changedTimeStamp;
   }
 
+  //   FALSE means not changed
   return false;
+};
+
+userSchema.methods.correctPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  crypto.createHash('sha256').update(resetToken);
 };
 const User = model('User', userSchema);
 

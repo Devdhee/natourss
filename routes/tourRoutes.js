@@ -9,7 +9,7 @@ import {
   getTourStats,
   getMonthlyPlans,
 } from '../controllers/tourController.js';
-import { protect } from '../controllers/authController.js';
+import { protect, restrictTo } from '../controllers/authController.js';
 
 const router = express.Router();
 
@@ -21,6 +21,10 @@ router.route('/tour-stats').get(getTourStats);
 router.route('/monthly-plans/:year').get(getMonthlyPlans);
 
 router.route('/').get(protect, getAllTours).post(createTour);
-router.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
+router
+  .route('/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(protect, restrictTo('admin', 'lead-guide'), deleteTour);
 
 export { router };
