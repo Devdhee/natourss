@@ -111,7 +111,7 @@ const forgotPassword = catchAsync(async (req, res, next) => {
   // 1. Get user based on posted email
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
-    return new AppError('There is no user with that email address.', 404);
+    return next(new AppError('There is no user with that email address.', 404));
   }
 
   // 2. Generate random token
