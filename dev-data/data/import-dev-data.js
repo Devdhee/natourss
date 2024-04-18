@@ -17,7 +17,7 @@ mongoose.connect(DB).then(() => console.log('DB connection was succesful'));
 
 // Read JSON file
 const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`, 'utf-8')
+  fs.readFileSync(`${__dirname}/dev-data/data/tours.json`, 'utf-8')
 );
 
 // Import data into database

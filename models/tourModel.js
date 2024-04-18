@@ -77,6 +77,30 @@ const tourSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    startLoaction: {
+      // GeoJson
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      addres: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        addres: String,
+        description: String,
+        day: Number,
+      },
+    ],
   },
   {
     strictQuery: true,

@@ -164,6 +164,7 @@ const forgotPassword = catchAsync(async (req, res, next) => {
     );
   }
 });
+
 const resetPassword = catchAsync(async (req, res, next) => {
   // 1. Get user based on the token
   const hashedToken = crypto
