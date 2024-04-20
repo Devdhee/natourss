@@ -1,5 +1,6 @@
-import { Schema, model } from 'mongoose';
+import mongoose, { Schema, model } from 'mongoose';
 import slugify from 'slugify';
+// import User from './userModel.js';
 // import validator from 'validator';
 
 const tourSchema = new Schema(
@@ -101,6 +102,13 @@ const tourSchema = new Schema(
         day: Number,
       },
     ],
+    // guides: Array, Embedding the tour guides
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     strictQuery: true,
@@ -123,6 +131,14 @@ tourSchema.pre('save', function (next) {
   next();
 });
 
+// Embedding the tour guides
+// tourSchema.pre('save', async function (next) {
+//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
+
+//   next();
+// });
+
 // tourSchema.post('save', function (doc, next) {
 //   console.log(doc);
 //   next();
@@ -133,6 +149,15 @@ tourSchema.pre(/^find/, function (next) {
   // tourSchema.pre('find', function (next) {
   this.find({ secretTour: { $ne: true } });
   this.start = Date.now();
+  next();
+});
+
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v',
+  });
+
   next();
 });
 
@@ -150,3 +175,4 @@ tourSchema.pre('aggregate', function (next) {
 const Tour = model('Tour', tourSchema);
 
 export default Tour;
+// RSJ72GGYZ8MPNGHWS4NQP6L2
