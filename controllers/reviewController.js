@@ -1,6 +1,6 @@
-import Review from '../models/reviewModel';
-import AppError from '../utils/appError';
-import { catchAsync } from '../utils/catchAsync';
+import Review from '../models/reviewModel.js';
+import AppError from '../utils/appError.js';
+import { catchAsync } from '../utils/catchAsync.js';
 
 export const getAllReviews = catchAsync(async (req, res, next) => {
   const reviews = await Review.find();
@@ -15,7 +15,7 @@ export const getAllReviews = catchAsync(async (req, res, next) => {
 });
 
 export const createNewReview = catchAsync(async (req, res, next) => {
-  const newReview = await Review.create();
+  const newReview = await Review.create(req.body);
   if (!newReview)
     return next(
       new AppError(
@@ -24,7 +24,7 @@ export const createNewReview = catchAsync(async (req, res, next) => {
       )
     );
 
-  res.status(200).json({
+  res.status(201).json({
     status: 'success',
     data: {
       newReview,
