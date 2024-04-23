@@ -1,33 +1,21 @@
 import Review from '../models/reviewModel.js';
-import AppError from '../utils/appError.js';
-import { catchAsync } from '../utils/catchAsync.js';
+import {
+  createOne,
+  deleteOne,
+  getAll,
+  getOne,
+  updateOne,
+} from './handleFactory.js';
 
-export const getAllReviews = catchAsync(async (req, res, next) => {
-  const reviews = await Review.find();
+export const setTourUserId = (req, res, next) => {
+  if (!req.body.tour) req.body.tour = req.params.tourId;
+  if (!req.body.user) req.body.user = req.user.id;
 
-  res.status(200).json({
-    status: 'success',
-    length: reviews.length,
-    data: {
-      reviews,
-    },
-  });
-});
+  next();
+};
 
-export const createNewReview = catchAsync(async (req, res, next) => {
-  const newReview = await Review.create(req.body);
-  if (!newReview)
-    return next(
-      new AppError(
-        'An error occured while creating the review, please try again later',
-        400
-      )
-    );
-
-  res.status(201).json({
-    status: 'success',
-    data: {
-      newReview,
-    },
-  });
-});
+export const getAllReviews = getAll(Review);
+export const getReview = getOne(Review);
+export const createNewReview = createOne(Review);
+export const updateReview = updateOne(Review);
+export const deleteReview = deleteOne(Review);

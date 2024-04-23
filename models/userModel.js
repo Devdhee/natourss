@@ -109,3 +109,5 @@ userSchema.methods.createPasswordResetToken = function () {
 const User = model('User', userSchema);
 
 export default User;
+
+// Default password for all users is test1234

@@ -38,8 +38,6 @@ app.use(express.json({ limit: '10kb' }));
 //Data Sanitization against NoSql query injection
 app.use(ExpressMongoSanitize());
 
-//Data Sanitization against XXS
-
 // Prevent parameter pollution
 app.use(
   hpp({
