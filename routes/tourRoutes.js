@@ -8,6 +8,8 @@ import {
   aliasTopTours,
   getTourStats,
   getMonthlyPlans,
+  getToursWithin,
+  getDistances,
 } from '../controllers/tourController.js';
 // import { createNewReview } from '../controllers/reviewController.js';
 import { router as reviewRouter } from './reviewRoutes.js';
@@ -23,6 +25,11 @@ router.route('/tour-stats').get(getTourStats);
 router
   .route('/monthly-plans/:year')
   .get(protect, restrictTo('admin', 'lead-guide'), getMonthlyPlans);
+
+router
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(getToursWithin);
+router.route('/distances/:latlng/unit/:unit').get(getDistances);
 
 router
   .route('/')
