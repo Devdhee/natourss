@@ -15,7 +15,13 @@ import { router as reviewRouter } from './routes/reviewRoutes.js';
 const __dirname = path.resolve();
 const app = express();
 
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
 // GLOBAL MIDDLEWARES
+// Serving static files
+app.use(express.static(`${__dirname}/public`));
+
 // Set security HTTP headers
 app.use(helmet());
 
@@ -52,9 +58,6 @@ app.use(
   })
 );
 
-// Serving static files
-app.use(express.static(`${__dirname}/public`));
-
 // Test Middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toDateString();
@@ -62,6 +65,11 @@ app.use((req, res, next) => {
 });
 
 // ROUTES
+app.get('/', (req, res) => {
+  res.status(200).render('base', {
+    tour: 'Forest Hiker',
+  });
+});
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
