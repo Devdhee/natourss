@@ -11,6 +11,7 @@ import { globalErrorHandler } from './controllers/errorController.js';
 import { router as tourRouter } from './routes/tourRoutes.js';
 import { router as userRouter } from './routes/userRoutes.js';
 import { router as reviewRouter } from './routes/reviewRoutes.js';
+import { router as viewRouter } from './routes/viewRoutes.js';
 
 const __dirname = path.resolve();
 const app = express();
@@ -65,11 +66,7 @@ app.use((req, res, next) => {
 });
 
 // ROUTES
-app.get('/', (req, res) => {
-  res.status(200).render('base', {
-    tour: 'Forest Hiker',
-  });
-});
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
