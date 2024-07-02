@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/overviews', getOverviews);
-router.get('/tours', getTours);
+router.get('/tour/:slug', getTours);
 
 router.get('/tour', (req, res) => {
   res.status(200).render('tour', {
